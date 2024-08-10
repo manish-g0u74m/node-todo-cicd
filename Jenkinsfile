@@ -1,40 +1,40 @@
-pipeline {
+pipeline{
     agent any
-    
-    stages {
-        
-        stage("code"){
+    stages{
+        stage("Code"){
             steps{
-                git url: "https://github.com/LondheShubham153/node-todo-cicd.git", branch: "master"
-                echo 'bhaiyya code clone ho gaya'
+                echo "Bhaiya Github se me Code Clone kr rha hun"
+                git url: "https://github.com/manish-g0u74m/node-todo-cicd", branch: "master"
+                echo "Bhaiya mera Code Clone ho gye hen"
             }
         }
-        stage("build and test"){
+        stage("Build image and test image"){
             steps{
-                sh "docker build -t node-app-test-new ."
-                echo 'code build bhi ho gaya'
+                echo "Now I am Building an Image"
+                sh "docker build -t node-app:latest ."
+                echo "Image Build ho gya hen"
             }
         }
-        stage("scan image"){
-            steps{
-                echo 'image scanning ho gayi'
-            }
+        stage("Scaning Image"){
+           steps{
+                echo "Bhaiya mene Image ko Scane kr liya hen"
+            } 
         }
-        stage("push"){
-            steps{
+        stage("Push to dockerhub"){
+           steps{
                 withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker tag node-app-test-new:latest ${env.dockerHubUser}/node-app-test-new:latest"
-                sh "docker push ${env.dockerHubUser}/node-app-test-new:latest"
-                echo 'image push ho gaya'
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"  
+                sh "docker tag node-app:latest ${env.dockerHubUser}/node-app:latest"
+                sh "docker push ${env.dockerHubUser}/node-app:latest"
+                echo "Build image Dockerhub pr push ho gyi he"
                 }
-            }
+            } 
         }
-        stage("deploy"){
-            steps{
+        stage("Deploy"){
+           steps{
                 sh "docker-compose down && docker-compose up -d"
-                echo 'deployment ho gayi'
-            }
+                echo "Bhaiya Application Deploy ho Gyi hen"
+            } 
         }
-    }
+    }  
 }
